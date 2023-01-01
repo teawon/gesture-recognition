@@ -68,15 +68,17 @@ while cap.isOpened():
             input_data = np.expand_dims(np.array(seq[-seq_length:], dtype=np.float32), axis=0)
 
             y_pred = model.predict(input_data).squeeze()
-
+            # 결과를 뽑아내서 y_pred에 저장
             i_pred = int(np.argmax(y_pred))
+            # 어떤인덱스인지 , conf를 뽑아낸다.
             conf = y_pred[i_pred]
 
             if conf < 0.9:
                 continue
-
+            # 0.9보다 낮다면 제스처를 취하지 않았다고 인지하고 버린다.
             action = actions[i_pred]
             action_seq.append(action)
+            #seq에 저장한다.
 
             if len(action_seq) < 3:
                 continue
@@ -84,6 +86,8 @@ while cap.isOpened():
             this_action = '?'
             if action_seq[-1] == action_seq[-2] == action_seq[-3]:
                 this_action = action
+
+            #마지막 3개의 액션이 모두 같다면 유효한 액션으로 판단후 화면에 띄운다. 그렇지 않다면 "?"를 출력.
 
             cv2.putText(img, f'{this_action.upper()}', org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
 
